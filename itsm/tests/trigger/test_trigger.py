@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -24,6 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 import json
 
+import mock
 from django.test import TestCase, override_settings
 
 
@@ -61,7 +62,13 @@ class TriggerViewTest(TestCase):
         self.assertEqual(rsp.data["result"], False)
 
     @override_settings(MIDDLEWARE=("itsm.tests.middlewares.OverrideMiddleware",))
-    def test_create_or_update_rules(self):
+    @mock.patch("itsm.trigger.permissions.WorkflowTriggerPermit.has_permission")
+    @mock.patch("itsm.trigger.permissions.WorkflowTriggerPermit.has_object_permission")
+    def test_create_or_update_rules(
+        self, patch_has_object_permission, patch_has_permission
+    ):
+        patch_has_object_permission.return_value = True
+        patch_has_permission.return_value = True
         url = "/api/trigger/triggers/"
         rsp = self.client.get(path=url, data=None, content_type="application/json")
         print(json.loads(rsp.content.decode("utf-8")))
@@ -80,7 +87,14 @@ class TriggerViewTest(TestCase):
         self.assertEqual(rsp.data["message"], "success")
 
     @override_settings(MIDDLEWARE=("itsm.tests.middlewares.OverrideMiddleware",))
-    def test_create_or_update_action_schemas(self):
+    @mock.patch("itsm.trigger.permissions.WorkflowTriggerPermit.has_permission")
+    @mock.patch("itsm.trigger.permissions.WorkflowTriggerPermit.has_object_permission")
+    def test_create_or_update_action_schemas(
+        self, patch_has_object_permission, patch_has_permission
+    ):
+        patch_has_object_permission.return_value = True
+        patch_has_permission.return_value = True
+
         url = "/api/trigger/triggers/"
         rsp = self.client.get(path=url, data=None, content_type="application/json")
         print(json.loads(rsp.content.decode("utf-8")))

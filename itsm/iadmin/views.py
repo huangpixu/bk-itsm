@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -23,7 +23,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -95,7 +95,7 @@ class CustomNotifyViewSet(ModelViewSet):
     serializer_class = CustomNotifySerializer
     queryset = CustomNotice.objects.all()
     pagination_class = None
-    
+
     permission_classes = (CustomNotifyPermit,)
     permission_free_actions = ["variable_list", "action_type"]
     permission_action_default = "system_settings_manage"

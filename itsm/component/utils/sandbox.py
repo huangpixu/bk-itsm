@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -23,7 +23,6 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-# import requests
 from RestrictedPython import compile_restricted, safe_globals, safe_builtins, utility_builtins  # noqa
 from RestrictedPython.Guards import guarded_iter_unpack_sequence  # noqa
 from RestrictedPython.Eval import default_guarded_getiter, default_guarded_getitem, default_guarded_getattr  # noqa
@@ -48,23 +47,11 @@ def map_data(source_code, data, key='response'):
     if not (source_code and IS_CPYTHON):
         return data
 
-    # limited_globals = safe_globals.copy()
-    # limited_globals.update(
-    #     {
-    #         '_getitem_': default_guarded_getitem,
-    #         '_getiter_': default_guarded_getiter,
-    #         '_iter_unpack_sequence_': guarded_iter_unpack_sequence,
-    #     }
-    # )
-    import json
-
     available_attrs = {
         '_getitem_': default_guarded_getitem,
         '_getiter_': default_guarded_getiter,
         '_iter_unpack_sequence_': guarded_iter_unpack_sequence,
         'enumerate': enumerate,
-        'json': json,
-        # 'requests': requests,
     }
 
     limited_globals = {'__builtins__': {**safe_builtins, **utility_builtins}, **available_attrs}

@@ -1,4 +1,43 @@
 # Changelog
+
+## [Version: 2.8.1] - 2025-07-07
+【Feature】Upgraded version dependencies: Python 3.11 and Django 4.2 
+
+## [Version: 2.7.9] - 2025-07-08
+【Fix】Resolved potential XSS vulnerability caused by v-html  
+【Fix】Fixed SQL injection risk due to extra parameter  
+
+
+## [Version: 2.7.8] - 2025-07-06
+[Fix] Resolved execution issues with the exec command  
+[Fix] Fixed abnormal execution behavior of branch gateways when handling numeric data type  
+
+## [Version: 2.7.7] - 2025-07-05
+【Fix】Resolved the Mako rendering issue  
+
+## [Version: 2.7.6] - 2025-04-18
+【Feature】Use environment variables to configure whether to enable the blue shield node.  
+【Feature】Add new API endpoint `get_ticket_event_logs` for retrieving ticket event logs.  
+【Feature】Add new API endpoint `get_tickets_processors` for retrieving tickets current processors.  
+【Improved】Display complete errors.    
+【Fix】The issue of error reporting on the "Current Processors" interface of the ticket list page.  
+【Fix】Resolved error in get SOPS node logs.  
+【Fix】Resolved error when required fields with default values were not provided during ticket creation via API.  
+【Fix】Fix DevOps node configuration does not fill the form issue.
+
+## [Version: 2.7.5] - 2025-03-04
+【Improved】Optimize the issue of OpenAPI returning an error when extra fields are passed during ticket creation.  
+【Fix】Fix the issue where the custom form fields are not displayed on the bill of lading page.  
+【Improved】Optimize validation logic when saving SOPS nodes.
+【Feature】Added configuration option in the approval node for automatic approval by approvers who have already approved previously.
+
+## [Version: 2.7.4] - 2025-02-18
+【Improved】Remove the preview entry next to the link field.   
+【Fix】Fixed the issue of duplicate API calls on the document details page.   
+【Fix】Fixed the issue with form field validation in the line configuration condition relationship.  
+【Fix】Fixed the XSS vulnerability in the comment API on the ticket page by filtering out the `a` tags.   
+【Improved】Optimize the logic for ExclusiveGateway `contains` string condition.  
+
 ## [Version: 2.7.3] - 2024-11-25
 【Feature】Add meta context management, applied to fast approval, MOA, and notification receivers filter.  
 【Fix】API request node POST parameter editing rendering issue.  

@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community
 Edition) available.
-Copyright (C) 2017-2020 THL A29 Limited, a Tencent company. All rights reserved.
+Copyright (C) 2025 Tencent. All rights reserved.
 Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 http://opensource.org/licenses/MIT
@@ -13,7 +13,7 @@ specific language governing permissions and limitations under the License.
 
 import logging
 
-from celery.decorators import periodic_task
+from blueapps.contrib.celery_tools.periodic import periodic_task
 from celery.schedules import crontab
 from django.conf import settings
 
@@ -28,7 +28,9 @@ def clean_expired_log():
 
     if expired_interval is None:
         expired_interval = 30
-        logger.warning("LOG_PERSISTENT_DAYS are not found in settings, use default value: 30")
+        logger.warning(
+            "LOG_PERSISTENT_DAYS are not found in settings, use default value: 30"
+        )
 
     del_num = LogEntry.objects.delete_expired_log(expired_interval)
     logger.info("%s log entry are deleted" % del_num)

@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -25,9 +25,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import json
 
-from mako.template import Template
 
 from common.log import logger
+from common.template.template import Template
 from itsm.postman.constants import TICKET_CONTEXT_KEY, TRIGGER_SOURCE
 from itsm.ticket.models import Ticket, TicketGlobalVariable
 from itsm.trigger.models import Trigger
@@ -70,7 +70,7 @@ class CompRequest(object):
         try:
             query_params = json.loads(Template(json.dumps(template)).render(**params_context))
         except Exception as e:
-            logger.warning("Template text=%s, context=%s, error=%s" % (template, params, e))
+            logger.warning("Template text=%s, context=%s, error=%s", template, params, e)
             return False, []
 
         if rpc_source == TRIGGER_SOURCE:

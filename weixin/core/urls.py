@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -23,11 +23,11 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-from django.conf.urls import url
+from django.urls import re_path
 
 from . import views
 
 
 urlpatterns = [
-    url(r'^$', views.login, name='weixin_login'),
+    re_path(r"^$", views.login, name="weixin_login"),
 ]

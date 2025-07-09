@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -27,7 +27,7 @@ from collections import defaultdict
 
 from django.db import transaction
 from django.db.models import Q
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django_bulk_update.helper import bulk_update
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -153,9 +153,11 @@ class TicketStatusViewSet(ModelViewSet):
 
         # 按照自定义顺序获取工单状态
         ordering = "FIELD(`id`, {})".format(
-            ",".join(["'{}'".format(v) for v in ticket_status_ids])
+            ",".join(["'{}'".format(int(v)) for v in ticket_status_ids])
         )
-        ticket_status = TicketStatus.objects.status_of_service_type(service_type).extra(
+        ticket_status = TicketStatus.objects.status_of_service_type(
+            service_type
+        ).extra(  # review
             select={"ordering": ordering}, order_by=["ordering"]
         )
 

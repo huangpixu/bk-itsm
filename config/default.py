@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -33,6 +33,9 @@ from blueapps.conf.log import get_logging_config_dict
 from blueapps.opentelemetry.utils import inject_logging_trace_info
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.db.backends.mysql.features import DatabaseFeatures
+from django.utils.functional import cached_property
+
 
 from config import (
     APP_CODE,
@@ -142,6 +145,7 @@ if USE_IAM:
         "iam.contrib.iam_migration",
         "itsm.auth_iam",
     )
+IAM_SKIP_AUTH = False
 
 # 这里是默认的中间件，大部分情况下，不需要改动
 # 如果你已经了解每个默认 MIDDLEWARE 的作用，确实需要去掉某些 MIDDLEWARE，或者改动先后顺序，请去掉下面的注释，然后修改
@@ -340,7 +344,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
     ),
     "DEFAULT_FILTER_BACKENDS": (
-        "itsm.component.drf.filters.OrderingFilter",
+        "rest_framework.filters.OrderingFilter",
         "django_filters.rest_framework.DjangoFilterBackend",
     ),
     "DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S",
@@ -376,7 +380,9 @@ IS_USE_REDIS = REDIS_HOST is not None
 if IS_USE_REDIS:
     CACHE_BACKEND_TYPE = os.environ.get("CACHE_BACKEND_TYPE", "RedisCache")
     REDIS_PORT = os.environ.get("BKAPP_REDIS_PORT", 6379)
-    REDIS_PASSWORD = os.environ.get("BKAPP_REDIS_PASSWORD", "")  # 密码中不能包括敏感字符,例如":"
+    REDIS_PASSWORD = os.environ.get(
+        "BKAPP_REDIS_PASSWORD", ""
+    )  # 密码中不能包括敏感字符,例如":"
     REDIS_SERVICE_NAME = os.environ.get("BKAPP_REDIS_SERVICE_NAME", "mymaster")
     REDIS_MODE = os.environ.get("BKAPP_REDIS_MODE", "single")
     REDIS_DB = os.environ.get("BKAPP_REDIS_DB", 0)
@@ -803,6 +809,9 @@ TAM_PROJECT_ID = os.environ.get("TAM_PROJECT_ID", "")
 # 是否初始化蓝盾
 INIT_DEVOPS_TEMPLATE = os.environ.get("INIT_DEVOPS_TEMPLATE", False)
 
+# 是否显示蓝盾节点
+BKAPP_CI_ENABLED = os.environ.get("BKAPP_CI_ENABLED", "") == "1"
+
 # 权限中心 SaaS host
 BK_IAM_APP_CODE = os.getenv("BK_IAM_V3_APP_CODE", "bk_iam")
 BK_IAM_SAAS_HOST = os.environ.get(
@@ -958,7 +967,6 @@ NOTIFY_ROUTER_NAME = os.getenv("BKAPP_NOTIFY_ROUTER_NAME", "router")
 
 IAM_SDK_CLIENT_TIMEOUT = int(os.getenv("BKAPP_IAM_SDK_CLIENT_TIMEOUT", 20))
 
-
 # 公共配置
 BK_SHARED_RES_URL = os.getenv("BKPAAS_SHARED_RES_URL") or os.getenv(
     "BKAPP_SHARED_RES_URL"
@@ -983,3 +991,24 @@ else:
         "BKAPP_QW_WEB_HOOK_URL",
         "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={}",
     )
+
+
+class PatchFeatures:
+    @cached_property
+    def minimum_database_version(self):
+        if self.connection.mysql_is_mariadb:
+            return (10, 4)
+        else:
+            return (5, 7)
+
+
+# 将补丁应用到 DatabaseFeatures 中
+DatabaseFeatures.minimum_database_version = PatchFeatures.minimum_database_version
+
+SCHEME_HTTPS = "https"
+SCHEME_HTTP = "http"
+BKPAAS_BK_DOMAIN = os.getenv("BKPAAS_BK_DOMAIN", "")
+CSRF_TRUSTED_ORIGINS = [
+    f"{SCHEME_HTTPS}://*.{BKPAAS_BK_DOMAIN}",
+    f"{SCHEME_HTTP}://*.{BKPAAS_BK_DOMAIN}",
+]

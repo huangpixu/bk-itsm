@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -24,7 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 IEOD_MANAGER_RESPONSE = {
-    "results": {
+    "results": [{
         "id": 1,
         "username": "admin",
         "display_name": "admin",
@@ -34,11 +34,11 @@ IEOD_MANAGER_RESPONSE = {
         "domain": "xxxx",
         "category_id": 1,
         "time_zone": "Asia/Shanghai",
-    }
+    }]
 }
 
 OPEN_MANAGER_RESPONSE = {
-    "results": {
+    "results": [{
         "id": 2,
         "username": "admin",
         "display_name": "admin",
@@ -48,5 +48,5 @@ OPEN_MANAGER_RESPONSE = {
         "domain": "xxxx",
         "category_id": 1,
         "time_zone": "Asia/Shanghai",
-    }
+    }]
 }

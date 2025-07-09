@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -25,7 +25,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 # 当前提供给前端获取用户权限链接使用
 from django.db.models import Q
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
@@ -66,7 +66,7 @@ class ProjectViewSet(component_viewsets.AuthModelViewSet):
     permission_action_default = ["project_edit"]
     permission_action_mapping = {
         "retrieve": ["project_view"],
-        "update_project_record": ["project_view"]
+        "update_project_record": ["project_view"],
     }
 
     def list(self, request, *args, **kwargs):

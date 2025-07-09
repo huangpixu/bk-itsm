@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -25,13 +25,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 from django.conf import settings
-from django.utils.translation import ugettext as _
-from mako.template import Template
+from django.utils.translation import gettext as _
 from rest_framework import serializers
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from common.log import logger
+from common.template.template import Template
 from itsm.component.constants import FOLLOW_OPERATE
 from itsm.component.drf import viewsets as component_viewsets
 from itsm.component.exceptions import ComponentCallError
@@ -108,7 +108,7 @@ class CommentViewSet(component_viewsets.NormalModelViewSet):
         "stars": ["exact"],
     }
     ordering_fields = "__all__"
-    
+
     def list(self, request, *args, **kwargs):
         return Response()
 

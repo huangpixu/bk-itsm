@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -37,8 +37,7 @@ from django.core.cache import cache
 from django.db import connection, transaction
 from django.db.models import Count, Q
 from django.http import HttpResponse
-from django.utils.translation import ugettext as _
-from mako.template import Template
+from django.utils.translation import gettext as _
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
@@ -47,6 +46,7 @@ from rest_framework_extensions.cache.decorators import cache_response
 
 from common.log import logger
 from common.redis import Cache
+from common.template.template import Template
 from config.default import OUT_LINK
 from itsm.component.cache_keys import ticket_cache_key
 from itsm.component.constants import (
@@ -61,7 +61,6 @@ from itsm.component.constants import (
     FIELD_PY_IMPACT,
     INVITE_OPERATE,
     MASTER_SLAVE,
-    PRIORITY,
     QUEUEING,
     RUNNING,
     FINISHED,
@@ -81,7 +80,8 @@ from itsm.component.constants import (
     OPEN,
     GENERAL,
     ORGANIZATION,
-    SUSPENDED, LEN_X_LONG,
+    SUSPENDED,
+    LEN_X_LONG,
 )
 from itsm.component.constants.flow import EXPORT_SUPPORTED_TYPE
 from itsm.component.dlls.component import ComponentLibrary
@@ -112,7 +112,6 @@ from itsm.task.models import Task
 from itsm.ticket.models import (
     FIELD_STATUS,
     Status,
-    SysDict,
     Ticket,
     TicketCommentInvite,
     TicketEventLog,
@@ -211,18 +210,6 @@ class TicketOrderingFilter(object):
 
         return ordering
 
-    @staticmethod
-    def priority_order(reverse, request):
-        """优先级自定义排序"""
-        priorities = SysDict.get_data_by_key(PRIORITY)
-        if reverse:
-            priorities.reverse()
-
-        ordering = "FIELD(`priority_key`, {})".format(
-            ",".join(["'{}'".format(priority["key"]) for priority in priorities])
-        )
-        return ordering
-
 
 class TicketModelViewSet(ModelViewSet):
     """工单序列化"""
@@ -230,7 +217,6 @@ class TicketModelViewSet(ModelViewSet):
     serializer_class = TicketSerializer
     queryset = Ticket.objects.all()
     permission_classes = (TicketPermissionValidate,)
-    ordering_class = TicketOrderingFilter
     filter_fields = {
         "service_type": ["exact", "in"],
         "creator": ["exact", "in"],
@@ -358,7 +344,7 @@ class TicketModelViewSet(ModelViewSet):
                     reverse, request
                 )
                 select = {"ordering": custom_ordering}
-                queryset = queryset.extra(select=select, order_by=(order_by,))
+                queryset = queryset.extra(select=select, order_by=(order_by,))  # review
 
         return queryset
 
@@ -380,16 +366,22 @@ class TicketModelViewSet(ModelViewSet):
 
         # creator(实际提单人)和updated_by在serializer.to_internal_value(data)中获取
         instance = serializer.save(meta=meta)
-        logger.info(f"[TICKET] create ticket do_after_create begin ticket_id=>{instance.id}")
-        
+        logger.info(
+            f"[TICKET] create ticket do_after_create begin ticket_id=>{instance.id}"
+        )
+
         instance.do_after_create(
             request.data["fields"], request.data.get("from_ticket_id", None)
         )
-        logger.info(f"[TICKET] create ticket do_after_create end ticket_id=>{instance.id}")
-        
+        logger.info(
+            f"[TICKET] create ticket do_after_create end ticket_id=>{instance.id}"
+        )
+
         start_pipeline.apply_async([instance])
-        logger.info(f"[TICKET] create ticket start_pipeline end ticket_id=>{instance.id}")
-        
+        logger.info(
+            f"[TICKET] create ticket start_pipeline end ticket_id=>{instance.id}"
+        )
+
         return Response({"sn": instance.sn, "id": instance.id}, status=201)
 
     @action(detail=True, methods=["get"])
@@ -573,11 +565,13 @@ class TicketModelViewSet(ModelViewSet):
         return Response(
             {
                 "result": len(fail_numbers) == 0,
-                "message": _("【{}】发送短信失败，请检查电话号码是否正确或联系管理员！").format(
-                    ",".join(fail_numbers)
-                )
-                if fail_numbers
-                else "success",
+                "message": (
+                    _(
+                        "【{}】发送短信失败，请检查电话号码是否正确或联系管理员！"
+                    ).format(",".join(fail_numbers))
+                    if fail_numbers
+                    else "success"
+                ),
                 "data": links,
                 "code": "OK" if len(fail_numbers) == 0 else "SEND_SMS_FAILED",
             }
@@ -639,7 +633,9 @@ class TicketModelViewSet(ModelViewSet):
             return Response(
                 {
                     "result": False,
-                    "message": _("【{}】发送邮件失败，请检查用户邮件配置是否正确或联系管理员！").format(receiver),
+                    "message": _(
+                        "【{}】发送邮件失败，请检查用户邮件配置是否正确或联系管理员！"
+                    ).format(receiver),
                     "data": ticket_url,
                     "code": "SEND_EMAIL_FAILED",
                 }
@@ -670,9 +666,11 @@ class TicketModelViewSet(ModelViewSet):
         ticket_releate_fields = group_by(ticket_fields, ["ticket_id"], dict_result=True)
         field_filter_conditions = set(
             [
-                "{}({})".format(field_obj["name"], field_obj["state_name"])
-                if field_obj["state_name"]
-                else field_obj["name"]
+                (
+                    "{}({})".format(field_obj["name"], field_obj["state_name"])
+                    if field_obj["state_name"]
+                    else field_obj["name"]
+                )
                 for field_obj in ticket_fields
             ]
         )
@@ -719,7 +717,11 @@ class TicketModelViewSet(ModelViewSet):
                 json.loads(base64.b64decode(service_fields)) if service_fields else {}
             )
         except BaseException:
-            raise ValidationError(_("解析导出的提单字段异常：请检查请求参数内容，提单字段需要通过base64编码。"))
+            raise ValidationError(
+                _(
+                    "解析导出的提单字段异常：请检查请求参数内容，提单字段需要通过base64编码。"
+                )
+            )
 
         # 获取字段的展示title，先将所有的字段混合起来
         all_service_field_keys = []
@@ -779,7 +781,6 @@ class TicketModelViewSet(ModelViewSet):
 
     @staticmethod
     def generate_xls(head_fields, ticket_values_list, service_type):
-
         """生成文档"""
         service_type_name = SERVICE_DICT.get(service_type) or "ALL"
         sheet_name = (
@@ -926,9 +927,9 @@ class TicketModelViewSet(ModelViewSet):
 
         return Response(
             {
-                "code": ResponseCodeStatus.OK
-                if res.result
-                else ResponseCodeStatus.FAILED,
+                "code": (
+                    ResponseCodeStatus.OK if res.result else ResponseCodeStatus.FAILED
+                ),
                 "message": res.message,
                 "result": res.result,
             }
@@ -953,9 +954,9 @@ class TicketModelViewSet(ModelViewSet):
 
         return Response(
             {
-                "code": ResponseCodeStatus.OK
-                if res.result
-                else ResponseCodeStatus.FAILED,
+                "code": (
+                    ResponseCodeStatus.OK if res.result else ResponseCodeStatus.FAILED
+                ),
                 "message": res.message,
                 "result": res.result,
             }
@@ -984,9 +985,9 @@ class TicketModelViewSet(ModelViewSet):
             )
         return Response(
             {
-                "code": ResponseCodeStatus.OK
-                if res.result
-                else ResponseCodeStatus.FAILED,
+                "code": (
+                    ResponseCodeStatus.OK if res.result else ResponseCodeStatus.FAILED
+                ),
                 "message": res.message,
                 "result": res.result,
             }
@@ -1247,10 +1248,12 @@ class TicketModelViewSet(ModelViewSet):
         close_status = request.data.get("current_status")
         if close_status not in ticket.status_instance.to_over_status_keys:
             raise ValidationError(_("设置的关闭状态不在正确状态范围之内"))
-    
+
         desc = request.data.get("desc") or ""
         if len(desc) > LEN_X_LONG:
-            raise ValidationError(_("关单失败，原因描述超过 {len}  字符").format(len=LEN_X_LONG))
+            raise ValidationError(
+                _("关单失败，原因描述超过 {len}  字符").format(len=LEN_X_LONG)
+            )
 
         ticket.close(
             close_status=close_status,
@@ -1447,8 +1450,7 @@ class TicketModelViewSet(ModelViewSet):
 
             if many and detail:
                 status = status.filter(
-                    ~Q(status__in=["TERMINATED"])
-                    | Q(state_id=ticket.first_state_id)
+                    ~Q(status__in=["TERMINATED"]) | Q(state_id=ticket.first_state_id)
                 )
             show_all_fields = many or status.status != "FINISHED"
             ticket_status = StatusSerializer(

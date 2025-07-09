@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -25,18 +25,22 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from itsm.component.constants import LEN_NORMAL
 
 
 class Model(models.Model):
-    FIELDS = ('creator', 'create_at', 'updated_by', 'update_at')
-    creator = models.CharField(_("创建人"), max_length=LEN_NORMAL, null=True, blank=True)
+    FIELDS = ("creator", "create_at", "updated_by", "update_at")
+    creator = models.CharField(
+        _("创建人"), max_length=LEN_NORMAL, null=True, blank=True
+    )
     create_at = models.DateTimeField(_("创建时间"), auto_now_add=True)
     update_at = models.DateTimeField(_("更新时间"), auto_now=True)
-    updated_by = models.CharField(_("修改人"), max_length=LEN_NORMAL, null=True, blank=True)
-    
+    updated_by = models.CharField(
+        _("修改人"), max_length=LEN_NORMAL, null=True, blank=True
+    )
+
     class Meta:
-        app_label = 'project'
+        app_label = "project"
         abstract = True

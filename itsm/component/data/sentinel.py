@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -117,7 +117,7 @@ class SentinelClient(DefaultClient):
             connection_url = "redis://:%s@%s:%s/%s" % (password, host, port, db)
         else:
             connection_url = "redis://%s:%s/%s" % (host, port, db)
-        logger.debug("Connecting to: %s", connection_url)
+        logger.debug("Connecting to: %s", host)
         return self.connection_factory.connect(connection_url)
 
     def close(self, **kwargs):

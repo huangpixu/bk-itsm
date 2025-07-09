@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community
 Edition) available.
-Copyright (C) 2017-2020 THL A29 Limited, a Tencent company. All rights reserved.
+Copyright (C) 2025 Tencent. All rights reserved.
 Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 http://opensource.org/licenses/MIT
@@ -12,7 +12,7 @@ specific language governing permissions and limitations under the License.
 """
 
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from pipeline.component_framework.constants import LEGACY_PLUGINS_VERSION
 from pipeline.component_framework.library import ComponentLibrary
@@ -40,7 +40,9 @@ class ComponentModel(models.Model):
     """
 
     code = models.CharField(_("组件编码"), max_length=255)
-    version = models.CharField(_("组件版本"), max_length=64, default=LEGACY_PLUGINS_VERSION)
+    version = models.CharField(
+        _("组件版本"), max_length=64, default=LEGACY_PLUGINS_VERSION
+    )
     name = models.CharField(_("组件名称"), max_length=255)
     status = models.BooleanField(_("组件是否可用"), default=True)
 

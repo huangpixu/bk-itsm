@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community
 Edition) available.
-Copyright (C) 2017-2020 THL A29 Limited, a Tencent company. All rights reserved.
+Copyright (C) 2025 Tencent. All rights reserved.
 Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 http://opensource.org/licenses/MIT
@@ -54,7 +54,9 @@ class SubstituteVal(object):
                 val = getattr(val, part) if hasattr(val, part) else val[part]
 
         except KeyError:
-            raise MissingVariableException("no value supplied for {}".format(self._path))
+            raise MissingVariableException(
+                "no value supplied for {}".format(self._path)
+            )
 
         return val
 
@@ -65,7 +67,9 @@ class SubstituteVal(object):
 # Grammar definition
 pathDelimiter = "."
 # match gcloud's variable
-identifier = Combine(Optional("${") + Optional("_") + Word(alphas, alphanums + "_") + Optional("}"))
+identifier = Combine(
+    Optional("${") + Optional("_") + Word(alphas, alphanums + "_") + Optional("}")
+)
 # identifier = Word(alphas, alphanums + "_")
 propertyPath = delimitedList(identifier, pathDelimiter, combine=True)
 
@@ -76,7 +80,10 @@ in_ = Keyword("in", caseless=True)
 lparen = Suppress("(")
 rparen = Suppress(")")
 
-binaryOp = oneOf("== != < > >= <= in notin issuperset notissuperset", caseless=True)("operator")
+binaryOp = oneOf(
+    "== != < > >= <= in notin issuperset notissuperset contains notcontains",
+    caseless=True,
+)("operator")
 
 E = CaselessLiteral("E")
 numberSign = Word("+-", exact=1)
@@ -86,7 +93,9 @@ realNumber = Combine(
     + Optional(E + Optional(numberSign) + Word(nums))
 )
 
-integer = Combine(Optional(numberSign) + Word(nums) + Optional(E + Optional("+") + Word(nums)))
+integer = Combine(
+    Optional(numberSign) + Word(nums) + Optional(E + Optional("+") + Word(nums))
+)
 
 # str_ = quotedString.addParseAction(removeQuotes)
 str_ = QuotedString('"') | QuotedString("'")
@@ -96,7 +105,7 @@ simpleVals = (
     realNumber.setParseAction(lambda toks: float(toks[0]))
     | integer.setParseAction(lambda toks: int(toks[0]))
     | str_
-    | bool_.setParseAction(lambda toks: toks[0] == "true")
+    | bool_.setParseAction(lambda toks: toks[0].lower() == "true")
     | propertyPath.setParseAction(lambda toks: SubstituteVal(toks))
 )  # need to add support for alg expressions
 
@@ -104,7 +113,8 @@ propertyVal = simpleVals | (lparen + Group(delimitedList(simpleVals)) + rparen)
 
 boolExpression = Forward()
 boolCondition = Group(
-    (Group(propertyVal)("lval") + binaryOp + Group(propertyVal)("rval")) | (lparen + boolExpression + rparen)
+    (Group(propertyVal)("lval") + binaryOp + Group(propertyVal)("rval"))
+    | (lparen + boolExpression + rparen)
 )
 boolExpression << boolCondition + ZeroOrMore((and_ | or_) + boolExpression)
 
@@ -198,14 +208,16 @@ class BoolRule(object):
                 return
 
             try:
-                self._tokens = boolExpression.parseString(self._query, parseAll=self.strict)
+                self._tokens = boolExpression.parseString(
+                    self._query, parseAll=self.strict
+                )
             except ParseException:
                 raise
 
             self._compiled = True
 
     def _expand_val(self, val, context):
-        if type(val) == list:
+        if isinstance(val, list):
             val = [self._expand_val(v, context) for v in val]
 
         if isinstance(val, SubstituteVal):
@@ -260,6 +272,10 @@ class BoolRule(object):
                 passed = set(lval).issuperset(set(rval))
             elif operator == "notissuperset":
                 passed = not set(lval).issuperset(set(rval))
+            elif operator == "contains":
+                passed = rval in lval
+            elif operator == "notcontains":
+                passed = rval not in lval
             else:
                 raise UnknownOperatorException("Unknown operator '{}'".format(operator))
 

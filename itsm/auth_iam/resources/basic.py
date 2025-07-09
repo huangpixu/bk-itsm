@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -71,20 +71,11 @@ class ItsmResourceProvider(ResourceProvider):
         """
         所有资源统一默认的内容
         """
-
-        keyword = filter.keyword
-        keyword_cache_key = "%s_%s" % (self.queryset.model._meta.model_name, keyword)
-
-        results = cache.get(keyword_cache_key)
-        if results is None:
-            queryset = self.filter_queryset(filter)
-            results = [
-                {"id": str(instance.id), "display_name": instance.name}
-                for instance in queryset[page.slice_from : page.slice_to]
-            ]
-
-            cache.set(keyword_cache_key, results, IAM_SEARCH_INSTANCE_CACHE_TIME)
-
+        queryset = self.filter_queryset(filter)
+        results = [
+            {"id": str(instance.id), "display_name": instance.name}
+            for instance in queryset[page.slice_from : page.slice_to]
+        ]
         return ListResult(results=results, count=len(results))
 
     def fetch_instance_info(self, filter, **options):

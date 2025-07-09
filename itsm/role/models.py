@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -29,7 +29,7 @@ import jsonfield
 from django.conf import settings
 from django.core.cache import cache
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from common.log import logger
 from itsm.component.constants import (
@@ -96,12 +96,19 @@ class RoleType(Model):
     is_processor = models.BooleanField(_("可否操作单据"), default=True)
     is_display = models.BooleanField(_("是否显示"), default=True)
     desc = models.CharField(
-        _("角色描述"), max_length=LEN_MIDDLE, default=EMPTY_STRING, null=True, blank=True
+        _("角色描述"),
+        max_length=LEN_MIDDLE,
+        default=EMPTY_STRING,
+        null=True,
+        blank=True,
     )
 
     objects = managers.Manager()
 
-    auth_resource = {"resource_type": "system_settings", "resource_type_name": "系统配置"}
+    auth_resource = {
+        "resource_type": "system_settings",
+        "resource_type_name": "系统配置",
+    }
     resource_operations = ["system_settings_manage"]
 
     class Meta:
@@ -151,7 +158,11 @@ class UserRole(ObjectManagerMixin, Model):
     owners = models.CharField(_("负责人"), max_length=LEN_XX_LONG, default=EMPTY_STRING)
     access = models.CharField(_("对应服务"), max_length=LEN_MIDDLE)
     desc = models.CharField(
-        _("用户角色描述"), max_length=LEN_MIDDLE, default=EMPTY_STRING, null=True, blank=True
+        _("用户角色描述"),
+        max_length=LEN_MIDDLE,
+        default=EMPTY_STRING,
+        null=True,
+        blank=True,
     )
     is_builtin = models.BooleanField(_("是否内置"), default=False)
     project_key = models.CharField(
@@ -365,18 +376,18 @@ class UserRole(ObjectManagerMixin, Model):
                 role_ids = [role_id for role_id in str(users).split(",") if role_id]
                 roles = roles.filter(id__in=role_ids)
 
-            if user_type == "CMDB":
-                if bk_biz_id == DEFAULT_BK_BIZ_ID:
-                    return []
+                if user_type == "CMDB":
+                    if bk_biz_id == DEFAULT_BK_BIZ_ID:
+                        return []
 
-                cmdb_users = get_bk_business(
-                    bk_biz_id, role_type=[role.role_key for role in roles]
-                )
-                return list_by_separator(cmdb_users)
+                    cmdb_users = get_bk_business(
+                        bk_biz_id, role_type=[role.role_key for role in roles]
+                    )
+                    return list_by_separator(cmdb_users)
 
-            if user_type == "GENERAL":
-                general_users = ",".join([role.members for role in roles])
-                return list_by_separator(general_users)
+                if user_type == "GENERAL":
+                    general_users = ",".join([role.members for role in roles])
+                    return list_by_separator(general_users)
 
         if user_type in ["PERSON", "EMPTY", "VARIABLE"] and users:
             return list_by_separator(users)
@@ -394,6 +405,7 @@ class UserRole(ObjectManagerMixin, Model):
         if user_type == "ASSIGN_LEADER":
             if ticket is not None:
                 # 获取节点处理人的leader
+                # 这种情况传参过来的pros是一个state_id
                 status = ticket.node_status.get(state_id=int(users))
                 return get_user_leader(status.processed_user)
 
@@ -442,7 +454,9 @@ class BKUserRole(models.Model):
     username = models.CharField(
         _("蓝鲸用户username"), max_length=LEN_NORMAL, default=EMPTY_STRING
     )
-    roles = jsonfield.JSONField(_("用户角色"), default=roles_dict, null=True, blank=True)
+    roles = jsonfield.JSONField(
+        _("用户角色"), default=roles_dict, null=True, blank=True
+    )
     uid = models.CharField(
         _("用户uid"), max_length=LEN_NORMAL, default=EMPTY_STRING, null=True, blank=True
     )

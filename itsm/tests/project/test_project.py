@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -75,7 +75,16 @@ class TestProject(TestCase):
 
     @override_settings(MIDDLEWARE=("itsm.tests.middlewares.OverrideMiddleware",))
     @mock.patch("itsm.auth_iam.utils.grant_instance_creator_related_actions")
-    def test_update_records(self, grant_instance_creator_related_actions) -> None:
+    @mock.patch("itsm.component.drf.permissions.IamAuthPermit.has_permission")
+    @mock.patch("itsm.component.drf.permissions.IamAuthPermit.iam_auth")
+    def test_update_records(
+        self,
+        patch_iam_auth,
+        patch_has_permission,
+        grant_instance_creator_related_actions,
+    ) -> None:
+        patch_iam_auth.return_value = True
+        patch_has_permission.return_value = True
         grant_instance_creator_related_actions.return_value = True
         resp = self.client.post("/api/project/projects/", CREATE_PROJECT_DATA)
 

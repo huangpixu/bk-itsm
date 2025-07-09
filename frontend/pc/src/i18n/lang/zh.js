@@ -1,6 +1,6 @@
 /*
  * Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
- * Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+ * Copyright (C) 2025 Tencent.  All rights reserved.
  * BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
  *
  * License for BK-ITSM 蓝鲸流程服务:
@@ -2691,6 +2691,7 @@ export const m = {
   '节点处理人为空时，直接跳过且不视为异常': '节点处理人为空时，直接跳过且不视为异常',
   '当审批节点的审批人为申请人时，自动通过': '当审批节点的审批人为申请人时，自动通过',
   '审批节点最终结果为拒绝时，自动终止单据': '审批节点最终结果为拒绝时，自动终止单据',
+  '已审批过的自动同意（历史节点中审批通过时，无需手动审批，系统将自动同意）': '已审批过的自动同意（历史节点中审批通过时，无需手动审批，系统将自动同意）',
   字段配置: '字段配置',
   '为必选项!': '为必选项!',
   必选项: '必选项',

@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community
 Edition) available.
-Copyright (C) 2017-2021 THL A29 Limited, a Tencent company. All rights reserved.
+Copyright (C) 2025 Tencent. All rights reserved.
 Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 http://opensource.org/licenses/MIT
@@ -320,11 +320,10 @@ class PluginServiceApiClient:
                 result.raise_for_status()
                 break
             except Exception as e:
-                message = (
-                    "request api error,invoke_num:{},{} {},kwargs:{},error:{} ".format(
-                        invoke_num, method, url, kwargs, str(e)
-                    )
+                kwargs = ("{}".format(kwargs)).replace(env.PAASV3_APIGW_API_TOKEN, "******")
+                error = str(e).replace(env.PAASV3_APIGW_API_TOKEN, "******")
+                logger.error(
+                    "request api error,invoke_num=>%s, method=>%s, url=>%s kwargs=>%s,error=>%s ",
+                    invoke_num, method, url, kwargs, error
                 )
-                logger.error(message.replace(env.PAASV3_APIGW_API_TOKEN, "******"))
-
         return result

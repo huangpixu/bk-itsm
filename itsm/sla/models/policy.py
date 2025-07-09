@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -26,10 +26,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import copy
 
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from jsonfield import JSONField
-from mako.template import Template
 
+from common.template.template import Template
 from itsm.component.constants import (
     EMPTY_DICT,
     EMPTY_INT,
@@ -353,7 +353,9 @@ class ActionPolicy(Model):
     """
 
     name = models.CharField(_("策略名称"), max_length=LEN_LONG)
-    type = models.IntegerField(_("升级事件类型"), choices=ACTION_POLICY_TYPES, default=1)
+    type = models.IntegerField(
+        _("升级事件类型"), choices=ACTION_POLICY_TYPES, default=1
+    )
     order = models.IntegerField(_("策略顺序"), default=-1)
     condition = JSONField("升级条件", help_text="当达到条件的时候，可以触发不同的动作")
     actions = models.ManyToManyField(Action, help_text=_("处理事件"))

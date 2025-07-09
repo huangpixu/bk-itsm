@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -31,7 +31,7 @@ from ...service.models import ServiceCategory
 
 
 class ServiceTypeResourceProvider(ItsmResourceProvider):
-    queryset = ServiceCategory.objects.filter(key__in=SERVICE_LIST).extra(
+    queryset = ServiceCategory.objects.filter(key__in=SERVICE_LIST).extra(  # reviewed
         select={'ordering': "FIELD(`key`, 'request', 'change', 'event', 'question')"},
         order_by=('ordering',)
     )

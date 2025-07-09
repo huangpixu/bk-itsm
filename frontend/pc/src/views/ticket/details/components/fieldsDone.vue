@@ -1,6 +1,6 @@
 <!--
   - Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
-  - Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+  - Copyright (C) 2025 Tencent.  All rights reserved.
   - BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
   -
   - License for BK-ITSM 蓝鲸流程服务:
@@ -114,7 +114,7 @@
       <span class="bk-li-left" :title="item.name">{{item.name}}：</span>
       <span class="bk-li-right bk-li-right-link">
         <span class="bk-pot-after bk-li-link" :title="item.value" @click="goToLink(item.value)">{{ item.value }}</span>
-        <i class="bk-itsm-icon commonicon-icon icon-itsm-icon-three link-view" @click="openLickInIframe(item)"></i>
+        <!-- <i class="bk-itsm-icon commonicon-icon icon-itsm-icon-three link-view" @click="openLickInIframe(item)"></i> -->
         <i class="bk-itsm-icon commonicon-icon icon-itsm-icon-copy link-copy" v-bk-copy="item.value"></i>
       </span>
     </div>

@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -23,7 +23,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-from django.conf.urls import url
+from django.urls import re_path
 from rest_framework.routers import DefaultRouter
 
 from itsm.postman.views import (
@@ -36,13 +36,13 @@ from itsm.postman.views import (
 
 routers = DefaultRouter(trailing_slash=True)
 
-routers.register(r'api_instance', ApiInstanceViewsSet, basename="api_instance")
+routers.register(r"api_instance", ApiInstanceViewsSet, basename="api_instance")
 
-routers.register(r'remote_system', RemoteSystemViewSet, basename='remote_system')
+routers.register(r"remote_system", RemoteSystemViewSet, basename="remote_system")
 
-routers.register(r'remote_api', RemoteApiViewSet, basename='remote_api')
+routers.register(r"remote_api", RemoteApiViewSet, basename="remote_api")
 
 # APIView不能通过routers.register()的方式注入路由
 urlpatterns = routers.urls + [
-    url(r'^rpc_api/$', RpcApiViewSet.as_view()),
+    re_path(r"^rpc_api/$", RpcApiViewSet.as_view()),
 ]

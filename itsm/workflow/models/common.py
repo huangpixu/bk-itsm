@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -26,7 +26,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import jsonfield
 from django.conf import settings
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from itsm.component.constants import (
     EMPTY_DICT,
@@ -49,7 +49,10 @@ class Notify(models.Model):
     is_builtin = models.BooleanField(_("是否为系统内置"), default=False)
     type = models.CharField(_("通知渠道"), max_length=LEN_SHORT, default="EMAIL")
     template = models.TextField(
-        _("通知模板：可使用变量如下：xxx（TODO）"), default=EMPTY_STRING, null=True, blank=True
+        _("通知模板：可使用变量如下：xxx（TODO）"),
+        default=EMPTY_STRING,
+        null=True,
+        blank=True,
     )
 
     class Meta:

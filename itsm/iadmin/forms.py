@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -25,14 +25,18 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 from django import forms
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from itsm.component.constants import LEN_LONG
 
 
 class CustomNotifyForm(forms.Form):
     title_template = forms.CharField(
-        max_length=LEN_LONG, label=_("标题模板"), help_text=_("工单字段的值可以作为参数写到模板中，格式如：【ITSM】${service}管理单【${action}】提醒")
+        max_length=LEN_LONG,
+        label=_("标题模板"),
+        help_text=_(
+            "工单字段的值可以作为参数写到模板中，格式如：【ITSM】${service}管理单【${action}】提醒"
+        ),
     )
     content_template = forms.CharField(
         widget=forms.Textarea(attrs={"cols": "120", "rows": "20"}),

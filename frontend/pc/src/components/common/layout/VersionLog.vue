@@ -1,6 +1,6 @@
 <!--
   - Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
-  - Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+  - Copyright (C) 2025 Tencent.  All rights reserved.
   - BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
   -
   - License for BK-ITSM 蓝鲸流程服务:
@@ -63,7 +63,7 @@
         <div class="bk-content-title">
           {{ $t('m.wiki["【"]')}}V{{versionInfo.version}}{{ $t('m.wiki["】版本更新明细"]')}}
         </div>
-        <div class="bk-content-markdown" v-html="markdownText"></div>
+        <div class="bk-content-markdown" v-dompurify-html="markdownText"></div>
       </div>
     </div>
   </div>

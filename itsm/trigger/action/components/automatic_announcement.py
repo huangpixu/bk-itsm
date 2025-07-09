@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -23,7 +23,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from itsm.component.utils import robot
 from itsm.trigger.action.core.component import BaseComponent
@@ -42,7 +42,9 @@ class RobotForms(BaseForm):
     chat_id = StringField(name="Chat ID", required=False, tips="群ID, 多个用,区分")
     content = StringField(name=_("文本内容"), field_type="TEXT", required=True)
     mentioned_list = StringField(
-        name="需要提及的人的列表", tips="英文半角逗号分割的英文名列表，不填则默认@所有成员，None不@任何人", required=False
+        name="需要提及的人的列表",
+        tips="英文半角逗号分割的英文名列表，不填则默认@所有成员，None不@任何人",
+        required=False,
     )
 
 

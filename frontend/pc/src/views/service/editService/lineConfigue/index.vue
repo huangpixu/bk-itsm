@@ -1,6 +1,6 @@
 <!--
   - Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
-  - Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+  - Copyright (C) 2025 Tencent.  All rights reserved.
   - BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
   -
   - License for BK-ITSM 蓝鲸流程服务:
@@ -290,6 +290,7 @@
   import apiFieldsWatch from '@/views/commonMix/api_fields_watch.js';
   import commonMix from '@/views/commonMix/common.js';
   import commonTriggerList from '@/views/processManagement/taskTemplate/components/commonTriggerList';
+  import { isEmpty } from '@/utils/util';
   import { errorHandler } from '@/utils/errorHandler';
 
   export default {
@@ -430,11 +431,9 @@
         } else if (listTwo.some(type => type === typeValue)) {
           betweenList = this.globalChoise.methods.filter(methods => (methods.typeName !== 'issuperset' && methods.typeName !== 'notissuperset'));
         } else if (listThree.some(type => type === typeValue)) {
-          const filterList = ['==', '!=', 'in', 'notin'];
-          betweenList = this.globalChoise.methods.filter(methods => filterList.includes(methods.typeName));
+          betweenList = this.globalChoise.methods.filter(methods => ['==', '!=', 'in', 'notin', 'contains', 'notcontains'].includes(methods.typeName));
         } else {
-          const filterList = ['==', '!='];
-          betweenList = this.globalChoise.methods.filter(methods => filterList.includes(methods.typeName));
+          betweenList = this.globalChoise.methods.filter(methods => ['==', '!='].includes(methods.typeName));
         }
         return betweenList;
       },
@@ -592,7 +591,7 @@
       submitLine() {
         if (this.lineInfo.condition_type === 'by_field') {
           this.lineInfo.expressions.forEach((item) => {
-            item.checkInfo = item.expressions.some(node => (!node.condition || !node.key || (Array.isArray(node.value) ? !node.value.length : !node.value)));
+            item.checkInfo = item.expressions.some(node => (isEmpty(node.condition) || isEmpty(node.key) || isEmpty(node.value)));
           });
           const checkStatus = this.lineInfo.expressions.some(item => item.checkInfo);
           if (checkStatus) {

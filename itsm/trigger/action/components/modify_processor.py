@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -23,7 +23,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from itsm.component.constants import FLOW_SIGNAL, TRANSITION_SIGNAL, TASK_SIGNAL
 from itsm.trigger.action.core.component import BaseComponent
@@ -63,8 +63,8 @@ class ModifyProcessorComponent(BaseComponent):
             self.data.set_outputs("message", "设置处理人为空")
             return False
 
-        dst_state.processors_type = processors['member_type']
-        dst_state.processors = processors['members']
+        dst_state.processors_type = processors["member_type"]
+        dst_state.processors = processors["members"]
         dst_state.save(update_fields=["processors_type", "processors"])
         dst_state.ticket.set_current_processors()
 
@@ -78,6 +78,6 @@ class ModifyProcessorComponent(BaseComponent):
             dst_state = Status.objects.get(id=self.context.get("dst_state"))
         except Status.DoesNotExist:
             return self.context
-        self.context.update(dst_state.ticket.get_output_fields(return_format='dict'))
+        self.context.update(dst_state.ticket.get_output_fields(return_format="dict"))
         self.validate_inputs()
         return self.context

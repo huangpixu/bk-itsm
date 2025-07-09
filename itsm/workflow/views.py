@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -34,7 +34,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.http import StreamingHttpResponse, FileResponse, Http404
 from django.utils.encoding import escape_uri_path
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from rest_framework import serializers, status, permissions
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -47,7 +47,8 @@ from business_rules.operators import (
     DateTimeType,
     TimeType,
     BooleanType,
-    SelectMultipleType, SelectType,
+    SelectMultipleType,
+    SelectType,
 )
 from common.log import logger
 from itsm.component.constants import (
@@ -192,10 +193,6 @@ class WorkflowViewSet(
     permission_free_actions = ["get_global_choices", "list"]
     permission_classes = (WorkflowIamAuth,)
 
-    def get_queryset(self):
-        self.queryset = self.queryset.exclude(flow_type="internal")
-        return self.queryset
-
     @action(detail=False, methods=["get"])
     def get_global_choices(self, request):
         """查询全局选项列表信息"""
@@ -301,11 +298,11 @@ class WorkflowViewSet(
         response = FileResponse(json.dumps([data], cls=JsonEncoder, indent=2))
         response["Content-Type"] = "application/octet-stream"
         # 中文文件名乱码问题
-        response[
-            "Content-Disposition"
-        ] = "attachment; filename*=UTF-8''bk_itsm_{}_{}.json".format(
-            escape_uri_path(workflow.name),
-            create_version_number(),
+        response["Content-Disposition"] = (
+            "attachment; filename*=UTF-8''bk_itsm_{}_{}.json".format(
+                escape_uri_path(workflow.name),
+                create_version_number(),
+            )
         )
 
         return response
@@ -377,6 +374,7 @@ class StateViewSet(BaseWorkflowElementViewSet):
         "type": ["exact", "in"],
     }
     pagination_class = None
+    permission_free_actions = ["variables"]
 
     def perform_destroy(self, instance):
         """删除State的同时需要重连主流程状态"""
@@ -540,7 +538,7 @@ class TransitionViewSet(BaseWorkflowElementViewSet):
         if self.action == "batch_update":
             return self.request.data.get("workflow_id")
         return None
-    
+
     def perform_destroy(self, instance):
         # 从开始节点出来的连线只能由一条, 且不能被删除
         if instance.from_state.type == START_STATE:
@@ -586,7 +584,9 @@ class BaseFieldViewSet(component_viewsets.ModelViewSet):
             field_object = self.get_object()
 
         if field_object.type != "FILE":
-            raise serializers.ValidationError(_("当前字段非附件字段，无法下载附件文件！"))
+            raise serializers.ValidationError(
+                _("当前字段非附件字段，无法下载附件文件！")
+            )
         try:
             files = (
                 field_object.choice
@@ -595,7 +595,9 @@ class BaseFieldViewSet(component_viewsets.ModelViewSet):
             )
         except Exception:
             logger.exception("json解析错误")
-            raise serializers.ValidationError(_("当前字段解析信息出错，请确认是否已进行数据升级！"))
+            raise serializers.ValidationError(
+                _("当前字段解析信息出错，请确认是否已进行数据升级！")
+            )
 
         file_info = files.get(unique_key)
         if not file_info:
@@ -606,7 +608,9 @@ class BaseFieldViewSet(component_viewsets.ModelViewSet):
 
         if not store.exists(file_path):
             raise serializers.ValidationError(
-                _("要下载的文件【{}】不存在, 可能已经被删除，请与管理员确认！").format(file_info["name"])
+                _("要下载的文件【{}】不存在, 可能已经被删除，请与管理员确认！").format(
+                    file_info["name"]
+                )
             )
 
         response = StreamingHttpResponse(FileWrapper(store.open(file_path, "rb"), 512))
@@ -671,7 +675,7 @@ class FieldViewSet(BaseFieldViewSet):
         if state_id:
             valid_fields = State.objects.fields_of_state(state_id)
             ordering = "FIELD(`id`, {})".format(
-                ",".join(["'{}'".format(v) for v in valid_fields])
+                ",".join(["'{}'".format(int(v)) for v in valid_fields])
             )
             queryset = queryset.filter(id__in=valid_fields).extra(
                 select={"ordering": ordering}, order_by=["ordering"]
@@ -750,7 +754,7 @@ class TemplateFieldViewSet(component_viewsets.ModelViewSet):
         "destroy": "field_delete",
         "update": "field_edit",
     }
-    
+
     filter_fields = {
         "id": ["in"],
         "key": ["exact", "in", "contains", "startswith"],
@@ -1102,7 +1106,7 @@ class TaskSchemaViewSet(DynamicListModelMixin, component_viewsets.ModelViewSet):
     permission_action_platform = "public_task_template_manage"
     permission_create_action = ["create", "clone"]
     permission_resource_is_project = True
-    
+
     pagination_class = None
 
     def update(self, request, *args, **kwargs):
@@ -1116,19 +1120,22 @@ class TaskSchemaViewSet(DynamicListModelMixin, component_viewsets.ModelViewSet):
                 isinstance(task_fields, dict)
                 and isinstance(task_fields["task_field_ids"], list)
             ):
-                raise serializers.ValidationError(_("任务字段排序参数不合法，请联系管理员"))
-
-            ordering = "FIELD(`id`, {})".format(
-                ",".join(
-                    [
-                        "'{}'".format(task_field_id)
-                        for task_field_id in task_fields["task_field_ids"]
-                    ]
+                raise serializers.ValidationError(
+                    _("任务字段排序参数不合法，请联系管理员")
                 )
+
+            task_field_ids = [int(i) for i in task_fields["task_field_ids"]]
+            ordering_tpl = "FIELD(`id`, {})".format(
+                ",".join(["%s"] * len(task_field_ids))
             )
+
             task_fields_schema = TaskFieldSchema.objects.filter(
                 task_schema_id=instance.id, stage=task_fields.get("stage")
-            ).extra(select={"custom_order": ordering}, order_by=["custom_order"])
+            ).extra(
+                select={"custom_order": ordering_tpl},
+                select_params=task_field_ids,
+                order_by=["custom_order"],
+            )  # modify
 
             for index, task_field_schema in enumerate(task_fields_schema):
                 task_field_schema.sequence = index

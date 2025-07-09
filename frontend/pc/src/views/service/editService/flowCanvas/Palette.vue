@@ -1,6 +1,6 @@
 <!--
   - Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
-  - Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+  - Copyright (C) 2025 Tencent.  All rights reserved.
   - BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
   -
   - License for BK-ITSM 蓝鲸流程服务:
@@ -56,7 +56,7 @@
         <i class="bk-itsm-icon icon-task-icon" style="font-size: 26px;"></i>
       </div>
     </li>
-    <li v-if="nodeDisabled === 'ieod'" v-bk-tooltips.right="$t(`m['蓝盾节点']`)">
+    <li v-if="devopsEnabled" v-bk-tooltips.right="$t(`m['蓝盾节点']`)">
       <div class="entry-item entry-gateway" data-type="TASK-DEVOPS" style="margin: 12px 0 2px;">
         <i class="bk-itsm-icon icon-devops-task-icon" style="font-size: 26px;"></i>
       </div>
@@ -71,7 +71,7 @@
         <i class="bk-itsm-icon icon-approval-node" style="font-size: 26px;"></i>
       </div>
     </li>
-    <li v-if="nodeDisabled === 'ieod'" v-bk-tooltips.right="$t(`m['蓝鲸插件节点']`)">
+    <li v-if="bkPluginEnabled" v-bk-tooltips.right="$t(`m['蓝鲸插件节点']`)">
       <div class="entry-item entry-gateway" data-type="BK-PLUGIN" style="margin: 12px 0 2px;">
         <i class="bk-itsm-icon icon-chajianjiedian plugin" style="font-size: 42px"></i>
       </div>
@@ -93,7 +93,8 @@
     name: 'Palette',
     data() {
       return {
-        nodeDisabled: window.RUN_VER,
+        devopsEnabled: window.BKAPP_CI_ENABLED === 'True',
+        bkPluginEnabled: window.RUN_VER === 'ieod',
       };
     },
   };

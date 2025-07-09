@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community
 Edition) available.
-Copyright (C) 2017-2020 THL A29 Limited, a Tencent company. All rights reserved.
+Copyright (C) 2025 Tencent. All rights reserved.
 Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 http://opensource.org/licenses/MIT
@@ -15,12 +15,11 @@ import copy
 import re
 import logging
 
-from mako.template import Template
 from mako import lexer, codegen
 from mako.exceptions import MakoException
 
+from common.template.template import Template
 from pipeline import exceptions
-from pipeline.core.data.sandbox import SANDBOX
 
 
 logger = logging.getLogger("root")
@@ -129,14 +128,11 @@ class ConstantTemplate(object):
 
         for tpl in templates:
             resolved = ConstantTemplate.resolve_template(tpl, value_maps)
-            string = string.replace(tpl, resolved)
+            string = string.replace(tpl, str(resolved))
         return string
 
     @staticmethod
     def resolve_template(template, value_maps):
-        data = {}
-        data.update(SANDBOX)
-        data.update(value_maps)
         if not isinstance(template, str):
             raise exceptions.ConstantTypeException("constant resolve error, template[%s] is not a string" % template)
         try:
@@ -145,7 +141,7 @@ class ConstantTemplate(object):
             logger.error("pipeline resolve template[{}] error[{}]".format(template, e))
             return template
         try:
-            resolved = tm.render_unicode(**data)
+            resolved = tm.render(**value_maps)
         except (NameError, TypeError, KeyError) as e:
             logger.warning(
                 "constant content is invalid, variable referred does not exist or variable type error[%s]" % e

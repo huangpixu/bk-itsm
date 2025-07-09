@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -29,10 +29,10 @@ import logging
 import jmespath
 import requests
 from django.conf import settings
-from jinja2 import Template
+from jinja2.sandbox import SandboxedEnvironment as Environment
 from pipeline.utils.boolrule import BoolRule
 from pipeline.component_framework.component import Component
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from itsm.component.constants import (
     TRANSITION_OPERATE,
@@ -61,7 +61,7 @@ class ParamsBuilder:
         :return:
         """
         if isinstance(template_value, str):
-            return Template(template_value).render(self.variables)
+            return Environment().from_string(template_value).render(self.variables)
         if isinstance(template_value, dict):
             render_value = {}
             for key, value in template_value.items():
@@ -222,7 +222,9 @@ class WebHookService(ItsmBaseService):
 
         state = ticket.flow.get_state(state_id)
         variables = state["variables"].get("outputs", [])
-        error_message_template = "WebHook任务【{name}】执行失败，失败信息 {detail_message}"
+        error_message_template = (
+            "WebHook任务【{name}】执行失败，失败信息 {detail_message}"
+        )
 
         processors = ticket.current_processors[1:-1]
         current_node = ticket.node_status.get(state_id=state_id)

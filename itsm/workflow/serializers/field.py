@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -26,7 +26,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import json
 
 from django.db import transaction
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from rest_framework import serializers
 from rest_framework.fields import JSONField, empty
 from rest_framework.validators import UniqueValidator
@@ -173,7 +173,11 @@ class TemplateFieldSerializer(AuthModelSerializer):
             "project_key",
         ) + model.FIELDS
         read_only_fields = ("is_builtin", "key") + model.FIELDS
-        create_only_fields = ("is_builtin", "key", "project_key", )
+        create_only_fields = (
+            "is_builtin",
+            "key",
+            "project_key",
+        )
 
     def __init__(self, *args, **kwargs):
         validator_class = kwargs.pop("validator_class", TemplateFieldValidator)
@@ -296,8 +300,8 @@ class TemplateFieldSerializer(AuthModelSerializer):
             [permission_action_platform], []
         )
         auth_actions = [
-            action_id 
-            for action_id in self.Meta.model.public_field_resource_operations 
+            action_id
+            for action_id in self.Meta.model.public_field_resource_operations
             if auth_result.get(permission_action_platform)
         ]
         data["auth_actions"] = auth_actions
@@ -438,7 +442,10 @@ class TableSerializer(AuthModelSerializer):
         required=True,
         max_length=LEN_MIDDLE,
         validators=[
-            UniqueValidator(queryset=Table.objects.all(), message=_("基础模型名称已经存在，请重新输入"))
+            UniqueValidator(
+                queryset=Table.objects.all(),
+                message=_("基础模型名称已经存在，请重新输入"),
+            )
         ],
     )
     desc = serializers.CharField(
@@ -470,10 +477,10 @@ class TableSerializer(AuthModelSerializer):
     def to_representation(self, instance):
         data = super(TableSerializer, self).to_representation(instance)
         ordering = "FIELD(`id`, %s)" % ",".join(
-            [str(field_id) for field_id in data["fields_order"]]
+            [str(int(field_id)) for field_id in data["fields_order"]]
         )
         data["fields"] = TemplateFieldSerializer(
-            TemplateField.objects.filter(id__in=data["fields"]).extra(
+            TemplateField.objects.filter(id__in=data["fields"]).extra(  # review
                 select={"ordering": ordering}, order_by=("ordering",)
             ),
             many=True,
@@ -510,10 +517,12 @@ class TableRetrieveSerializer(AuthModelSerializer):
             query_set = query_set.exclude(key=FIELD_BIZ)
 
         ordering = "FIELD(`id`, %s)" % ",".join(
-            [str(field_id) for field_id in instance.fields_order]
+            [str(int(field_id)) for field_id in instance.fields_order]
         )
         data["fields"] = TemplateFieldSerializer(
-            query_set.extra(select={"ordering": ordering}, order_by=("ordering",)),
+            query_set.extra(
+                select={"ordering": ordering}, order_by=("ordering",)
+            ),  # review
             many=True,
         ).data
         return data

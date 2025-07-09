@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -26,9 +26,10 @@ import copy
 import json
 import re
 
-from django.utils.translation import ugettext as _
-from mako.template import Template
 
+from django.utils.translation import gettext as _
+
+from common.template.template import Template
 from itsm.component.exceptions import ParamError
 from itsm.component.utils.bk_bunch import bunchify
 from pipeline.utils.boolrule import BoolRule

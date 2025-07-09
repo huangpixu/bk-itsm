@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -185,7 +185,7 @@ def init_after_workflow_created(sender, instance, created, *args, **kwargs):
 
     if instance.table:
         ordering = "FIELD(`id`, %s)" % ",".join(
-            [str(field_id) for field_id in instance.table.fields_order]
+            [str(int(field_id)) for field_id in instance.table.fields_order]
         )
         fields = TemplateField.objects.filter(
             id__in=instance.table.fields_order, is_builtin=True
@@ -194,7 +194,7 @@ def init_after_workflow_created(sender, instance, created, *args, **kwargs):
         if not instance.is_biz_needed:
             fields.exclude(key=FIELD_BIZ)
 
-        fields = fields.extra(select={"ordering": ordering}, order_by=("ordering",))
+        fields = fields.extra(select={"ordering": ordering}, order_by=("ordering",)) # review
 
         try:
             Field.objects.create_table_fields(instance, fields)

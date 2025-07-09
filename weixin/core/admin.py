@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -24,22 +24,24 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from weixin.core.models import BkWeixinUser
 
 
 class BkWeixinUserAdmin(admin.ModelAdmin):
     fieldsets = (
-        (None, {'fields': ('userid', 'openid', 'nickname')}),
-        (_('Personal info'), {
-            'fields': ('gender', 'country', 'province', 'city', 'email', 'mobile')}),
-        (_('Extra info'), {'fields': ('avatar_url', 'qr_code')}),
+        (None, {"fields": ("userid", "openid", "nickname")}),
+        (
+            _("Personal info"),
+            {"fields": ("gender", "country", "province", "city", "email", "mobile")},
+        ),
+        (_("Extra info"), {"fields": ("avatar_url", "qr_code")}),
     )
 
-    list_display = ('userid', 'openid', 'nickname', 'mobile', 'email')
-    search_fields = ('userid', 'nickname')
-    ordering = ('userid',)
+    list_display = ("userid", "openid", "nickname", "mobile", "email")
+    search_fields = ("userid", "nickname")
+    ordering = ("userid",)
 
 
 admin.site.register(BkWeixinUser, BkWeixinUserAdmin)

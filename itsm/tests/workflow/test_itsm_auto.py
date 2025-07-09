@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -226,6 +226,6 @@ class PipelineTest(TestCase):
         
         auto_service = AutoStateService(name="itsm")
         auto_service._runtime_attrs = {"by_flow": 1}
-        result = auto_service.get_rsp_content(ticket, 2, {}, {}, {})
+        result = auto_service.get_rsp_content(ticket, 2, {}, "{}", {})
         self.assertEqual(result[0], False)
 

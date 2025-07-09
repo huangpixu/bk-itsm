@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -30,10 +30,10 @@ import jmespath
 import requests
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.utils.translation import ugettext as _
-from mako.template import Template
+from django.utils.translation import gettext as _
 
 from common.log import logger
+from common.template.template import Template
 from itsm.component.constants import GENERAL_NOTICE
 from itsm.component.exceptions import GetCustomApiDataError
 from itsm.component.utils.misc import transform_single_username
@@ -102,6 +102,9 @@ def build_message(_notify, task_id, ticket, message, action, **kwargs):
     else:
         custom_notify = get_custom_notify(ticket, action, _notify.type)
 
+    if task_id is not None:
+        kwargs["task_id"] = task_id
+
     # 获取单据上下文
     context = ticket.get_notify_context()
     context.update(
@@ -153,13 +156,13 @@ def get_custom_api_data(field):
                   "name": "bk_biz_name"
                 }
     """
-    from jinja2 import Template
+    from jinja2.sandbox import SandboxedEnvironment as Environment
 
     config = field.meta.get("api_config", {})
     kv_relation = field.kv_relation
     envs = field.ticket.meta.get("envs", {})
     method = config.get("method", "GET")
-    url = Template(config.get("url", "")).render(envs)
+    url = Environment().from_string(config.get("url", "")).render(envs)
     query_params = config.get("query_params", {})
     headers = config.get("headers", {})
     body = config.get("body", {})

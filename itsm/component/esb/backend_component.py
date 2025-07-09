@@ -2,7 +2,7 @@
 """
 Tencent is pleased to support the open source community by making BK-ITSM 蓝鲸流程服务 available.
 
-Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2025 Tencent.  All rights reserved.
 
 BK-ITSM 蓝鲸流程服务 is licensed under the MIT License.
 
@@ -29,6 +29,8 @@ from json import JSONDecodeError
 
 import urllib
 import traceback
+
+import jmespath
 import requests
 
 from django.conf import settings
@@ -278,13 +280,8 @@ class BkComponent(object):
                 continue
 
             try:
-                handle_code = (
-                    "handle_data = unbunchify(bunchify(response).{rsp_data})".format(
-                        rsp_data=attr
-                    )
-                )
-                exec(handle_code)
-                data[attr] = locals()["handle_data"]
+                handle_code = jmespath.search(attr, response)
+                data[attr] = handle_code
             except AttributeError as e:
                 logger.warning(
                     "handle_response attribute_error[{}]: {}".format(attr, e)
